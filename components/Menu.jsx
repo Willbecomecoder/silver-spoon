@@ -58,19 +58,19 @@ const categories = [
       name: "Margherita Pizza",
       description:
         "Classic Italian pizza topped with mozzarella cheese, fresh basil, and rich tomato sauce.",
-      image: "/images/Margherita pizza.png",
+      image: "/images/Margherita-pizza.png",
     },
     {
       name: "Cheese Garlic Bread",
       description:
         "Freshly baked garlic bread loaded with melted cheese, butter, herbs, and roasted garlic.",
-      image: "/images/cheese-garlic-bread.png",
+      image: "/images/Cheese-Garlic-Bread.png",
     },
     {
       name: "Alfredo Pasta",
       description:
         "Creamy Alfredo pasta tossed with parmesan cheese, herbs, and a rich white sauce.",
-      image: "/images/alfredo-pasta.png",
+      image: "/images/Alfredo-pasta.png",
     },
     {
       name: "White Sauce Pasta",
@@ -88,7 +88,7 @@ const categories = [
       name: "Cheese Pizza",
       description:
         "Golden baked pizza loaded with premium mozzarella cheese and rich tomato sauce.",
-      image: "/images/Cheese-pizza.jpeg",
+      image: "/images/Cheese-Pizza.jpg",
     },
   ],
 },
@@ -118,25 +118,25 @@ const categories = [
       name: "Chilli Paneer",
       description:
         "Soft paneer cubes tossed with onions, capsicum, garlic, and spicy Schezwan sauce.",
-      image: "/images/chilli-paneer.jpg",
+      image: "/images/Chilli-Paneer.jpg",
     },
     {
       name: "Chilli Potato",
       description:
         "Crispy potato fingers coated in tangy garlic, chili sauce, and fresh vegetables.",
-      image: "/images/chilli-potato.jpg",
+      image: "/images/Chilli-Potato.jpg",
     },
     {
       name: "Vegetable Spring Rolls",
       description:
         "Golden crispy spring rolls stuffed with fresh vegetables and served with spicy dip.",
-      image: "/images/Vegetable-Spring-Rolls.jpg",
+      image: "/images/Veg-Spring-Rolls.jpg",
     },
     {
       name: "Butter Masala Maggi",
       description:
         "Creamy butter masala Maggi cooked with aromatic spices for a rich and comforting taste.",
-      image: "/images/butter-masala-maggi.png",
+      image: "/images/Butter-Masala-Maggi.png",
     },
   ],
 },
@@ -214,7 +214,7 @@ const categories = [
       name: "Vanilla & Strawberry Ice Cream",
       description:
         "A delicious combination of creamy vanilla and refreshing strawberry ice cream scoops.",
-      image: "/images/Vanilla-&-Strawberry-ice-cream.jpg",
+      image: "/images/Vanilla-&-Strawberry-Ice-Cream.jpg",
     },
     {
       name: "Sweet Lassi",
