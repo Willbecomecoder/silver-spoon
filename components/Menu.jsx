@@ -112,7 +112,7 @@ const categories = [
       name: "Schezwan Fried Rice",
       description:
         "Spicy Schezwan fried rice stir-fried with fresh vegetables and bold Chinese flavors.",
-      image: "/images/schezwan-fried-rice.png",
+      image: "/images/schezwan-fried-rice.jpg",
     },
     {
       name: "Chilli Paneer",
