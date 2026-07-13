@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+import { useCart } from "@/components/checkout/cart-context";
 
 import "swiper/css";
 
@@ -14,39 +15,45 @@ const categories = [
   tagline: "Rich spices, slow-cooked traditions",
   dishes: [
     {
+      id: "indian-kadai-paneer",
       name: "Kadai Paneer",
-      description:
-        "Fresh paneer cubes cooked with capsicum, onions, tomatoes, and authentic kadai spices.",
+      description: "Paneer cooked in rich kadai masala.",
+      price: 220,
       image: "/images/kadai-paneer.png",
     },
     {
+      id: "indian-paneer-tikka",
       name: "Paneer Tikka",
-      description:
-        "Smoky grilled paneer marinated in yogurt, herbs, and traditional Indian spices.",
+      description: "Grilled paneer with Indian spices.",
+      price: 280,
       image: "/images/Paneer-Tikka.jpg",
     },
     {
+      id: "indian-soya-chaap-biryani",
       name: "Soya Chaap Biryani",
-      description:
-        "Fragrant basmati rice layered with juicy soya chaap and aromatic biryani spices.",
+      description: "Aromatic biryani with soya chaap.",
+      price: 180,
       image: "/images/soya-chap-biryani.png",
     },
     {
+      id: "indian-dal-makhani",
       name: "Dal Makhani",
-      description:
-        "Slow-cooked black lentils simmered in butter, cream, and rich North Indian spices.",
+      description: "Creamy slow-cooked black lentils.",
+      price: 140,
       image: "/images/Dal-makhani.jpg",
     },
     {
+      id: "indian-butter-paneer-masala",
       name: "Butter Paneer Masala",
-      description:
-        "Soft paneer cubes served in creamy butter tomato gravy with rich Indian flavors.",
+      description: "Paneer in creamy butter gravy.",
+      price: 220,
       image: "/images/butter-paneer-masala.webp",
     },
     {
+      id: "indian-kashmiri-dum-aloo",
       name: "Kashmiri Dum Aloo",
-      description:
-        "Baby potatoes simmered in rich Kashmiri-style gravy infused with authentic spices.",
+      description: "Baby potatoes in rich gravy.",
+      price: 160,
       image: "/images/kashmiri-dum-aloo.png",
     },
   ],
@@ -55,39 +62,45 @@ const categories = [
   tagline: "Classic recipes, comforting flavors",
   dishes: [
     {
+      id: "italian-margherita-pizza",
       name: "Margherita Pizza",
-      description:
-        "Classic Italian pizza topped with mozzarella cheese, fresh basil, and rich tomato sauce.",
+      description: "Classic mozzarella pizza.",
+      price: 300,
       image: "/images/Margherita pizza.png",
     },
     {
+      id: "italian-cheese-garlic-bread",
       name: "Cheese Garlic Bread",
-      description:
-        "Freshly baked garlic bread loaded with melted cheese, butter, herbs, and roasted garlic.",
+      description: "Garlic bread with melted cheese.",
+      price: 120,
       image: "/images/cheese-garlic-bread.png",
     },
     {
+      id: "italian-alfredo-pasta",
       name: "Alfredo Pasta",
-      description:
-        "Creamy Alfredo pasta tossed with parmesan cheese, herbs, and a rich white sauce.",
+      description: "Creamy Alfredo white sauce pasta.",
+      price: 200,
       image: "/images/alfredo-pasta.png",
     },
     {
+      id: "italian-white-sauce-pasta",
       name: "White Sauce Pasta",
-      description:
-        "Creamy white sauce pasta cooked with vegetables, herbs, and parmesan cheese.",
+      description: "Creamy white sauce pasta.",
+      price: 200,
       image: "/images/white-sauce-pasta.jpg",
     },
     {
+      id: "italian-red-sauce-pasta",
       name: "Red Sauce Pasta",
-      description:
-        "Penne pasta tossed in flavorful tomato sauce with Italian herbs and spices.",
+      description: "Penne pasta in tomato sauce.",
+      price: 180,
       image: "/images/red-sauce-pasta.jpg",
     },
     {
+      id: "italian-cheese-pizza",
       name: "Cheese Pizza",
-      description:
-        "Golden baked pizza loaded with premium mozzarella cheese and rich tomato sauce.",
+      description: "Mozzarella cheese pizza.",
+      price: 300,
       image: "/images/Cheese-pizza.jpeg",
     },
   ],
@@ -97,45 +110,52 @@ const categories = [
   tagline: "Bold wok-fired favorites",
   dishes: [
     {
+      id: "chinese-veg-hakka-noodles",
       name: "Veg Hakka Noodles",
-      description:
-        "Wok-tossed Hakka noodles loaded with fresh vegetables and authentic Indo-Chinese sauces.",
+      description: "Wok tossed vegetable noodles.",
+      price: 130,
       image: "/images/Hakka-Noodles.webp",
     },
     {
+      id: "chinese-veg-manchurian",
       name: "Veg Manchurian",
-      description:
-        "Crispy vegetable balls tossed in spicy Manchurian gravy with spring onions and peppers.",
+      description: "Vegetable balls in gravy.",
+      price: 180,
       image: "/images/veg-manchurian.jpg",
     },
     {
+      id: "chinese-schezwan-fried-rice",
       name: "Schezwan Fried Rice",
-      description:
-        "Spicy Schezwan fried rice stir-fried with fresh vegetables and bold Chinese flavors.",
+      description: "Spicy Schezwan fried rice.",
+      price: 160,
       image: "/images/schezwan-fried-rice.jpg",
     },
     {
+      id: "chinese-chilli-paneer",
       name: "Chilli Paneer",
-      description:
-        "Soft paneer cubes tossed with onions, capsicum, garlic, and spicy Schezwan sauce.",
+      description: "Paneer tossed in chilli sauce.",
+      price: 180,
       image: "/images/chilli-paneer.jpg",
     },
     {
+      id: "chinese-chilli-potato",
       name: "Chilli Potato",
-      description:
-        "Crispy potato fingers coated in tangy garlic, chili sauce, and fresh vegetables.",
+      description: "Crispy chilli potato.",
+      price: 120,
       image: "/images/chilli-potato.jpg",
     },
     {
+      id: "chinese-vegetable-spring-rolls",
       name: "Vegetable Spring Rolls",
-      description:
-        "Golden crispy spring rolls stuffed with fresh vegetables and served with spicy dip.",
+      description: "Crispy vegetable spring rolls.",
+      price: 110,
       image: "/images/Vegetable-Spring-Rolls.jpg",
     },
     {
+      id: "chinese-butter-masala-maggi",
       name: "Butter Masala Maggi",
-      description:
-        "Creamy butter masala Maggi cooked with aromatic spices for a rich and comforting taste.",
+      description: "Creamy butter masala Maggi.",
+      price: 120,
       image: "/images/butter-masala-maggi.png",
     },
   ],
@@ -145,39 +165,45 @@ const categories = [
   tagline: "Crisp, tangy, and full of soul",
   dishes: [
     {
+      id: "south-indian-masala-dosa",
       name: "Masala Dosa",
-      description:
-        "Golden crispy dosa stuffed with flavorful potato masala, served with coconut chutney and hot sambar.",
+      description: "Crispy dosa with potato filling.",
+      price: 120,
       image: "/images/Masala-Dosa.webp",
     },
     {
+      id: "south-indian-idli-sambar",
       name: "Idli Sambar",
-      description:
-        "Soft steamed idlis served with authentic sambar and fresh coconut chutney.",
+      description: "Soft idli with sambar.",
+      price: 90,
       image: "/images/idli-sambar.jpg",
     },
     {
+      id: "south-indian-paneer-masala-dosa",
       name: "Paneer Masala Dosa",
-      description:
-        "Crispy dosa filled with spicy paneer masala and served with traditional chutneys.",
+      description: "Paneer stuffed dosa.",
+      price: 160,
       image: "/images/paneer-masala-dosa.png",
     },
     {
+      id: "south-indian-paneer-uttapam",
       name: "Paneer Uttapam",
-      description:
-        "Soft uttapam topped with fresh paneer, onions, tomatoes, and aromatic South Indian spices.",
+      description: "Soft paneer uttapam.",
+      price: 180,
       image: "/images/paneer-uttapam.jpg",
     },
     {
+      id: "south-indian-schezwan-paneer-dosa",
       name: "Schezwan Paneer Dosa",
-      description:
-        "Crispy dosa stuffed with spicy Schezwan paneer for a delicious Indo-Chinese fusion.",
+      description: "Spicy Schezwan dosa.",
+      price: 180,
       image: "/images/schezwan-paneer-dosa.png",
     },
     {
+      id: "south-indian-rava-onion-dosa",
       name: "Rava Onion Dosa",
-      description:
-        "Extra crispy rava dosa topped with onions, herbs, and authentic South Indian spices.",
+      description: "Crispy onion rava dosa.",
+      price: 100,
       image: "/images/rava-onion-dosa.jpg",
     },
   ],
@@ -187,39 +213,45 @@ const categories = [
   tagline: "Sweet bites to end on a high",
   dishes: [
     {
+      id: "desserts-gulab-jamun",
       name: "Gulab Jamun",
-      description:
-        "Soft golden milk dumplings soaked in warm sugar syrup for a classic Indian sweet delight.",
+      description: "Soft syrup soaked dumplings.",
+      price: 30,
       image: "/images/Gulab-Jamun.webp",
     },
     {
+      id: "desserts-rasmalai",
       name: "Rasmalai",
-      description:
-        "Soft cottage cheese dumplings soaked in creamy saffron-flavored milk and topped with pistachios.",
+      description: "Creamy saffron dessert.",
+      price: 80,
       image: "/images/rasmalai.png",
     },
     {
+      id: "desserts-rasgulla",
       name: "Rasgulla",
-      description:
-        "Fresh, spongy cottage cheese balls soaked in light sugar syrup for a refreshing dessert.",
+      description: "Fresh cottage cheese sweet.",
+      price: 50,
       image: "/images/Rasgulla.jpg",
     },
     {
+      id: "desserts-oreo-milkshake",
       name: "Oreo Milkshake",
-      description:
-        "Rich and creamy chocolate ice cream made with premium cocoa for every chocolate lover.",
+      description: "Creamy Oreo shake.",
+      price: 110,
       image: "/images/Oreo-Milkshake.jpg",
     },
     {
+      id: "desserts-vanilla-strawberry-ice-cream",
       name: "Vanilla & Strawberry Ice Cream",
-      description:
-        "A delicious combination of creamy vanilla and refreshing strawberry ice cream scoops.",
+      description: "Two scoop ice cream.",
+      price: 90,
       image: "/images/Vanilla-&-Strawberry-Ice-Cream.jpg",
     },
     {
+      id: "desserts-sweet-lassi",
       name: "Sweet Lassi",
-      description:
-        "Traditional chilled yogurt drink blended until smooth for a refreshing and creamy taste.",
+      description: "Traditional sweet lassi.",
+      price: 80,
       image: "/images/Sweet-lassi.jpg",
     },
   ],
@@ -229,39 +261,45 @@ const categories = [
   tagline: "Refreshing sips for every mood",
   dishes: [
     {
+      id: "beverages-hot-milk-tea",
       name: "Hot Milk Tea",
-      description:
-        "Freshly brewed milk tea prepared with premium tea leaves for a warm and comforting experience.",
+      description: "Fresh Indian milk tea.",
+      price: 30,
       image: "/images/hot-milk-tea.png",
     },
     {
+      id: "beverages-cold-coffee",
       name: "Cold Coffee",
-      description:
-        "Smooth chilled coffee blended with fresh milk, ice cream, and topped with creamy foam.",
+      description: "Cold coffee with ice cream.",
+      price: 90,
       image: "/images/Cold-Coffee.jpg",
     },
     {
+      id: "beverages-vanilla-shake",
       name: "Vanilla Shake",
-      description:
-        "Creamy vanilla milkshake made with premium vanilla ice cream and fresh chilled milk.",
+      description: "Creamy vanilla shake.",
+      price: 100,
       image: "/images/Vanilla-shake.jpg",
     },
     {
+      id: "beverages-strawberry-milkshake",
       name: "Strawberry Milkshake",
-      description:
-        "Rich strawberry milkshake blended with fresh strawberries and creamy ice cream.",
+      description: "Fresh strawberry shake.",
+      price: 100,
       image: "/images/Strawberry-shake.webp",
     },
     {
+      id: "beverages-sweet-lassi",
       name: "Sweet Lassi",
-      description:
-        "Traditional Indian sweet lassi blended with fresh yogurt for a smooth and refreshing taste.",
+      description: "Refreshing yogurt drink.",
+      price: 80,
       image: "/images/Sweet-lassi.jpg",
     },
     {
+      id: "beverages-mojito",
       name: "Mojito",
-      description:
-        "Refreshing mint and lime cooler served chilled with sparkling soda and crushed ice.",
+      description: "Mint lime cooler.",
+      price: 110,
       image: "/images/mojito.jpg",
     },
   ],
@@ -269,6 +307,8 @@ const categories = [
 ];
 
 export default function Menu() {
+  const { getItemQuantity, setItemQuantity } = useCart();
+
   return (
     <section id="menu" className="bg-[#0F0F0F] px-4 py-16 sm:px-8 lg:px-16">
       <motion.div
@@ -286,7 +326,11 @@ export default function Menu() {
       <div className="mx-auto mt-12 max-w-6xl">
         {categories.map((category, index) => (
           <div key={category.name}>
-            <CuisineRow category={category} />
+            <CuisineRow
+              category={category}
+              getItemQuantity={getItemQuantity}
+              onUpdateQuantity={setItemQuantity}
+            />
             {index < categories.length - 1 && (
               <div className="my-12 h-px bg-[#D4AF37]/20" />
             )}
@@ -297,7 +341,7 @@ export default function Menu() {
   );
 }
 
-function CuisineRow({ category }) {
+function CuisineRow({ category, getItemQuantity, onUpdateQuantity }) {
   const swiperRef = useRef(null);
 
   return (
@@ -321,9 +365,11 @@ function CuisineRow({ category }) {
           swiperRef.current = swiper;
         }}
         spaceBetween={20}
-        slidesPerView={1.2}
+        slidesPerView={1.08}
         breakpoints={{
+          480: { slidesPerView: 1.2 },
           640: { slidesPerView: 2.2 },
+          768: { slidesPerView: 2.6 },
           1024: { slidesPerView: 4 },
         }}
         loop
@@ -336,8 +382,12 @@ function CuisineRow({ category }) {
         className="mt-6 [&_.swiper-slide]:h-auto"
       >
         {category.dishes.map((dish) => (
-          <SwiperSlide key={dish.name}>
-            <DishCard dish={dish} />
+          <SwiperSlide key={dish.id} className="h-auto">
+            <DishCard
+              dish={dish}
+              quantity={getItemQuantity(dish.id)}
+              onUpdateQuantity={onUpdateQuantity}
+            />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -364,9 +414,9 @@ function CuisineRow({ category }) {
   );
 }
 
-function DishCard({ dish }) {
+function DishCard({ dish, quantity, onUpdateQuantity }) {
   return (
-    <div className="group rounded-2xl border border-[#D4AF37]/30 bg-white/5 p-4">
+    <div className="group flex h-full min-w-0 flex-col rounded-2xl border border-[#D4AF37]/30 bg-white/5 p-4">
       <div className="overflow-hidden rounded-xl border-2 border-transparent transition-colors group-hover:border-[#D4AF37]">
         <Image
           src={dish.image}
@@ -376,8 +426,46 @@ function DishCard({ dish }) {
           className="h-40 w-full object-cover sm:h-48"
         />
       </div>
-      <h4 className="mt-4 font-semibold text-[#F5F1E8]">{dish.name}</h4>
-      <p className="mt-1 text-sm text-white/50">{dish.description}</p>
+      <h4 className="mt-4 break-words font-semibold text-[#F5F1E8]">{dish.name}</h4>
+      <p className="mt-1 break-words text-sm text-white/50">{dish.description}</p>
+      <div className="mt-4 flex items-center justify-between gap-2 pt-2">
+        <span className="shrink-0 text-base font-semibold text-[#D4AF37]">
+          {"\u20B9"}
+          {dish.price}
+        </span>
+        {quantity > 0 ? (
+          <div className="inline-flex shrink-0 items-center rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10">
+            <button
+              type="button"
+              onClick={() => onUpdateQuantity(dish, quantity - 1)}
+              aria-label={`Decrease quantity of ${dish.name}`}
+              className="flex h-11 w-11 items-center justify-center text-lg font-semibold text-[#F5F1E8] transition-colors hover:text-[#D4AF37]"
+            >
+              -
+            </button>
+            <span className="w-8 text-center text-sm font-semibold text-[#F5F1E8]">
+              {quantity}
+            </span>
+            <button
+              type="button"
+              onClick={() => onUpdateQuantity(dish, quantity + 1)}
+              aria-label={`Increase quantity of ${dish.name}`}
+              className="flex h-11 w-11 items-center justify-center text-lg font-semibold text-[#F5F1E8] transition-colors hover:text-[#D4AF37]"
+            >
+              +
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onUpdateQuantity(dish, 1)}
+            aria-label={`Add ${dish.name} to cart`}
+            className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-[#D4AF37]/50 bg-[#D4AF37]/10 px-4 text-sm font-medium text-[#F5F1E8] transition-colors hover:border-[#D4AF37] hover:bg-[#D4AF37]/15"
+          >
+            + Add
+          </button>
+        )}
+      </div>
     </div>
   );
 }
