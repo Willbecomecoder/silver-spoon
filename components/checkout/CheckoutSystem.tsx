@@ -77,7 +77,7 @@ export default function CheckoutSystem() {
       }
 
       requestAnimationFrame(() => {
-        activeElement.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+        activeElement.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
       });
     };
 
@@ -223,11 +223,14 @@ export default function CheckoutSystem() {
 
               <div
                 ref={scrollContainerRef}
-                className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto px-4 py-4 pb-32 sm:px-6 sm:py-5 sm:pb-36"
+                className="flex flex-1 min-h-0 flex-col overflow-x-hidden overflow-y-auto px-4 py-4 pb-32 sm:px-6 sm:py-5 sm:pb-36"
                 style={{
                   WebkitOverflowScrolling: "touch",
                   overscrollBehavior: "contain",
                   scrollBehavior: "smooth",
+                  touchAction: "pan-y",
+                  scrollPaddingTop: "calc(7rem + env(safe-area-inset-top, 0px))",
+                  scrollPaddingBottom: "calc(10rem + env(safe-area-inset-bottom, 0px))",
                   paddingBottom: "calc(9rem + env(safe-area-inset-bottom, 0px))",
                 }}
               >
@@ -311,15 +314,7 @@ function SummaryStep({
 
   return (
     <div className="flex min-h-full flex-col gap-5">
-      <div
-        className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto sm:overflow-visible"
-        style={{
-          WebkitOverflowScrolling: "touch",
-          overscrollBehavior: "contain",
-          scrollBehavior: "smooth",
-          paddingBottom: "8px",
-        }}
-      >
+      <div className="flex-1 min-h-0">
         <OrderSummary items={items} total={total} onUpdateQuantity={onUpdateQuantity} showTotalsOnMobile={false} />
         <div className="mt-4 sm:hidden">
           <OrderSummaryTotals total={total} />
