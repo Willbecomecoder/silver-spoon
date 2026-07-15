@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import {
@@ -35,19 +35,68 @@ export default function CheckoutSystem() {
   const [upiConfirmed, setUpiConfirmed] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<SavedOrder | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
       return;
     }
 
-    const { overflow } = document.body.style;
+    const bodyOverflow = document.body.style.overflow;
+    const bodyOverscrollBehavior = document.body.style.overscrollBehavior;
+    const htmlOverflow = document.documentElement.style.overflow;
+    const htmlOverscrollBehavior = document.documentElement.style.overscrollBehavior;
+
     document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
+    document.documentElement.style.overflow = "hidden";
+    document.documentElement.style.overscrollBehavior = "none";
 
     return () => {
-      document.body.style.overflow = overflow;
+      document.body.style.overflow = bodyOverflow;
+      document.body.style.overscrollBehavior = bodyOverscrollBehavior;
+      document.documentElement.style.overflow = htmlOverflow;
+      document.documentElement.style.overscrollBehavior = htmlOverscrollBehavior;
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) {
+      return;
+    }
+
+    const scrollFocusedFieldIntoView = () => {
+      const activeElement = document.activeElement;
+      if (!(activeElement instanceof HTMLElement) || !scrollContainer.contains(activeElement)) {
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        activeElement.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+      });
+    };
+
+    const handleFocusIn = (event: FocusEvent) => {
+      if (event.target instanceof HTMLElement) {
+        window.setTimeout(scrollFocusedFieldIntoView, 120);
+      }
+    };
+
+    scrollContainer.addEventListener("focusin", handleFocusIn);
+
+    const viewport = window.visualViewport;
+    viewport?.addEventListener("resize", scrollFocusedFieldIntoView);
+
+    return () => {
+      scrollContainer.removeEventListener("focusin", handleFocusIn);
+      viewport?.removeEventListener("resize", scrollFocusedFieldIntoView);
+    };
+  }, [isOpen, step]);
 
   useEffect(() => {
     if (itemCount === 0 && step !== "success") {
@@ -129,7 +178,7 @@ export default function CheckoutSystem() {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-4 right-3 z-40 inline-flex h-12 max-w-[calc(100vw-1.5rem)] items-center gap-2 rounded-full border border-[#D4AF37]/50 bg-[#0F0F0F]/95 px-4 text-sm font-semibold text-[#F5F1E8] shadow-[0_12px_30px_rgba(0,0,0,0.35)] backdrop-blur-md transition-colors hover:border-[#D4AF37] sm:bottom-6 sm:right-6 sm:h-auto sm:max-w-none sm:gap-3 sm:px-5 sm:py-3"
+          className="fixed bottom-4 left-3 right-3 z-40 inline-flex h-12 items-center justify-between gap-2 rounded-full border border-[#D4AF37]/50 bg-[#0F0F0F]/95 px-4 text-sm font-semibold text-[#F5F1E8] shadow-[0_12px_30px_rgba(0,0,0,0.35)] backdrop-blur-md transition-colors hover:border-[#D4AF37] sm:bottom-6 sm:left-auto sm:right-6 sm:h-auto sm:max-w-none sm:justify-start sm:gap-3 sm:px-5 sm:py-3"
         >
           <span className="shrink-0 text-[#D4AF37]">{itemCount} Items</span>
           <span className="truncate">Checkout</span>
@@ -155,9 +204,9 @@ export default function CheckoutSystem() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="fixed right-[2.5vw] top-3 z-50 flex h-[calc(100%-1.5rem)] w-[95vw] max-w-2xl flex-col overflow-hidden rounded-3xl border border-[#D4AF37]/20 bg-[#0F0F0F] shadow-2xl sm:right-0 sm:top-0 sm:h-full sm:w-full sm:rounded-none sm:border-l sm:border-r-0 sm:border-t-0 sm:border-b-0"
+              className="fixed right-0 top-0 z-50 flex h-[100dvh] w-full max-w-none min-w-0 flex-col overflow-hidden rounded-none border border-[#D4AF37]/20 bg-[#0F0F0F] shadow-2xl sm:max-w-[480px] sm:border-l sm:border-r-0 sm:border-t-0 sm:border-b-0 lg:max-w-2xl"
             >
-              <div className="flex items-center justify-between border-b border-[#D4AF37]/20 px-4 py-4 sm:px-6">
+              <div className="flex items-center justify-between border-b border-[#D4AF37]/20 px-4 py-4 pt-[calc(1rem+env(safe-area-inset-top,0px))] sm:px-6 sm:pt-4">
                 <div className="min-w-0 pr-3">
                   <h2 className="break-words font-serif text-[28px] font-bold leading-none text-white sm:text-2xl">Checkout</h2>
                   <p className="mt-2 break-words text-base text-white/50 sm:text-sm">{getStepLabel(step)}</p>
@@ -172,7 +221,16 @@ export default function CheckoutSystem() {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-4 pb-24 sm:px-6 sm:py-5 sm:pb-6">
+              <div
+                ref={scrollContainerRef}
+                className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto px-4 py-4 pb-32 sm:px-6 sm:py-5 sm:pb-36"
+                style={{
+                  WebkitOverflowScrolling: "touch",
+                  overscrollBehavior: "contain",
+                  scrollBehavior: "smooth",
+                  paddingBottom: "calc(9rem + env(safe-area-inset-bottom, 0px))",
+                }}
+              >
                 {step === "summary" ? (
                   <SummaryStep
                     items={items}
@@ -252,10 +310,23 @@ function SummaryStep({
   }
 
   return (
-    <div className="space-y-5">
-      <OrderSummary items={items} total={total} onUpdateQuantity={onUpdateQuantity} />
+    <div className="flex min-h-full flex-col gap-5">
+      <div
+        className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto sm:overflow-visible"
+        style={{
+          WebkitOverflowScrolling: "touch",
+          overscrollBehavior: "contain",
+          scrollBehavior: "smooth",
+          paddingBottom: "8px",
+        }}
+      >
+        <OrderSummary items={items} total={total} onUpdateQuantity={onUpdateQuantity} showTotalsOnMobile={false} />
+        <div className="mt-4 sm:hidden">
+          <OrderSummaryTotals total={total} />
+        </div>
+      </div>
 
-      <div className="sticky bottom-0 -mx-4 border-t border-[#D4AF37]/10 bg-[#0F0F0F]/95 px-4 py-4 backdrop-blur-md sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
+      <div className="mt-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:sticky sm:bottom-0 sm:z-10 sm:-mx-4 sm:mt-auto sm:border-t sm:border-[#D4AF37]/10 sm:bg-[#0F0F0F]/95 sm:px-4 sm:py-4 sm:backdrop-blur-md">
         <button
           type="button"
           onClick={onContinue}
@@ -282,7 +353,7 @@ function DetailsStep({
   onContinue: () => void;
 }) {
   return (
-    <div className="space-y-5">
+    <div className="flex min-h-full flex-col gap-5">
       <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-6">
         <h3 className="font-serif text-2xl font-bold text-[#D4AF37]">Customer Details</h3>
 
@@ -306,7 +377,7 @@ function DetailsStep({
 
           <div>
             <p className="text-sm font-medium text-[#F5F1E8]">Delivery / Pickup</p>
-            <div className="mt-3 flex flex-wrap gap-3">
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
               <ChoiceButton
                 label="Delivery"
                 isActive={customer.orderType === "delivery"}
@@ -341,7 +412,7 @@ function DetailsStep({
         </div>
       </div>
 
-      <div className="sticky bottom-0 -mx-4 flex flex-col gap-3 border-t border-[#D4AF37]/10 bg-[#0F0F0F]/95 px-4 py-4 backdrop-blur-md sm:static sm:mx-0 sm:flex-row sm:flex-wrap sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
+      <div className="sticky bottom-0 z-10 -mx-4 mt-auto flex flex-col gap-3 border-t border-[#D4AF37]/10 bg-[#0F0F0F]/95 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] backdrop-blur-md sm:static sm:mx-0 sm:flex-row sm:flex-wrap sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
         <SecondaryButton onClick={onBack}>Back</SecondaryButton>
         <PrimaryButton onClick={onContinue}>Continue to Payment</PrimaryButton>
       </div>
@@ -382,7 +453,7 @@ function PaymentStep({
   });
 
   return (
-    <div className="space-y-5">
+    <div className="flex min-h-full flex-col gap-5">
       <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-6">
         <h3 className="font-serif text-2xl font-bold text-[#D4AF37]">Payment Method</h3>
 
@@ -480,7 +551,7 @@ function PaymentStep({
         </div>
       </div>
 
-      <div className="sticky bottom-0 -mx-4 flex flex-col gap-3 border-t border-[#D4AF37]/10 bg-[#0F0F0F]/95 px-4 py-4 backdrop-blur-md sm:static sm:mx-0 sm:flex-row sm:flex-wrap sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
+      <div className="sticky bottom-0 z-10 -mx-4 mt-auto flex flex-col gap-3 border-t border-[#D4AF37]/10 bg-[#0F0F0F]/95 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] backdrop-blur-md sm:static sm:mx-0 sm:flex-row sm:flex-wrap sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
         <SecondaryButton onClick={onBack}>Back</SecondaryButton>
         <PrimaryButton onClick={onPlaceOrder}>Place Order</PrimaryButton>
       </div>
@@ -526,15 +597,14 @@ function OrderSummary({
   total,
   onUpdateQuantity,
   orderType,
+  showTotalsOnMobile = true,
 }: {
   items: ReturnType<typeof useCart>["items"];
   total: number;
   onUpdateQuantity: ReturnType<typeof useCart>["setItemQuantity"];
   orderType?: CustomerDetails["orderType"];
+  showTotalsOnMobile?: boolean;
 }) {
-  const deliveryCharge = orderType === "delivery" ? 0 : 0;
-  const grandTotal = total + deliveryCharge;
-
   return (
     <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-6">
       <h3 className="font-serif text-2xl font-bold text-[#D4AF37]">Order Summary</h3>
@@ -547,9 +617,9 @@ function OrderSummary({
           >
             <div className="min-w-0">
               <p className="font-semibold text-[#F5F1E8]">{item.name}</p>
-              {item.description ? <p className="mt-1 text-white/50">{item.description}</p> : null}
+              {item.description ? <p className="mt-1 text-white/50 line-clamp-2">{item.description}</p> : null}
             </div>
-            <div className="grid min-w-0 grid-cols-[auto_1fr] items-center gap-3 sm:contents">
+            <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 sm:contents">
               <p className="min-w-0 text-[#D4AF37] sm:text-right">{formatCurrency(item.price)}</p>
               <CartItemQuantityControl
                 item={item}
@@ -569,23 +639,44 @@ function OrderSummary({
         ))}
       </div>
 
-      <div className="mt-5 border-t border-[#D4AF37]/10 pt-4">
-        <div className="space-y-3 text-sm">
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-white/60">Subtotal</span>
-            <span className="text-[#D4AF37]">{formatCurrency(total)}</span>
-          </div>
-          {orderType === "delivery" ? (
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-white/60">Delivery Charge</span>
-              <span className="text-[#D4AF37]">{formatCurrency(deliveryCharge)}</span>
-            </div>
-          ) : null}
-          <div className="flex items-center justify-between gap-4 text-base font-semibold">
-            <span className="text-[#F5F1E8]">Grand Total</span>
-            <span className="text-[#D4AF37]">{formatCurrency(grandTotal)}</span>
-          </div>
+      {showTotalsOnMobile ? (
+        <div className="mt-5 border-t border-[#D4AF37]/10 pt-4">
+          <OrderSummaryTotals total={total} orderType={orderType} />
         </div>
+      ) : (
+        <div className="mt-5 hidden border-t border-[#D4AF37]/10 pt-4 sm:block">
+          <OrderSummaryTotals total={total} orderType={orderType} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OrderSummaryTotals({
+  total,
+  orderType,
+}: {
+  total: number;
+  orderType?: CustomerDetails["orderType"];
+}) {
+  const deliveryCharge = orderType === "delivery" ? 0 : 0;
+  const grandTotal = total + deliveryCharge;
+
+  return (
+    <div className="space-y-3 text-sm">
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-white/60">Subtotal</span>
+        <span className="text-[#D4AF37]">{formatCurrency(total)}</span>
+      </div>
+      {orderType === "delivery" ? (
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-white/60">Delivery Charge</span>
+          <span className="text-[#D4AF37]">{formatCurrency(deliveryCharge)}</span>
+        </div>
+      ) : null}
+      <div className="flex items-center justify-between gap-4 text-base font-semibold">
+        <span className="text-[#F5F1E8]">Grand Total</span>
+        <span className="text-[#D4AF37]">{formatCurrency(grandTotal)}</span>
       </div>
     </div>
   );
@@ -604,7 +695,7 @@ function CartItemQuantityControl({
         type="button"
         onClick={() => onUpdateQuantity(item, item.quantity - 1)}
         aria-label={`Decrease quantity of ${item.name}`}
-        className="flex h-11 w-11 items-center justify-center text-lg font-semibold text-[#F5F1E8] transition-colors hover:text-[#D4AF37]"
+        className="flex h-10 w-10 items-center justify-center text-lg font-semibold text-[#F5F1E8] transition-colors hover:text-[#D4AF37] sm:h-11 sm:w-11"
       >
         -
       </button>
@@ -613,7 +704,7 @@ function CartItemQuantityControl({
         type="button"
         onClick={() => onUpdateQuantity(item, item.quantity + 1)}
         aria-label={`Increase quantity of ${item.name}`}
-        className="flex h-11 w-11 items-center justify-center text-lg font-semibold text-[#F5F1E8] transition-colors hover:text-[#D4AF37]"
+        className="flex h-10 w-10 items-center justify-center text-lg font-semibold text-[#F5F1E8] transition-colors hover:text-[#D4AF37] sm:h-11 sm:w-11"
       >
         +
       </button>
@@ -715,7 +806,7 @@ function ChoiceButton({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex h-12 min-w-[120px] items-center justify-center rounded-full border px-4 text-sm transition-colors sm:h-11 ${
+      className={`inline-flex h-12 w-full items-center justify-center rounded-full border px-4 text-sm transition-colors sm:h-11 sm:min-w-[120px] sm:w-auto ${
         isActive
           ? "border-[#D4AF37] bg-[#D4AF37]/10 text-[#F5F1E8]"
           : "border-[#D4AF37]/30 bg-transparent text-white/70 hover:border-[#D4AF37]/50 hover:text-[#F5F1E8]"

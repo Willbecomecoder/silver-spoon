@@ -379,7 +379,7 @@ function CuisineRow({ category, getItemQuantity, onUpdateQuantity }) {
           disableOnInteraction: false,
           pauseOnMouseEnter: true,
         }}
-        className="mt-6 [&_.swiper-slide]:h-auto"
+        className="mt-6 [&_.swiper-wrapper]:items-stretch [&_.swiper-slide]:h-auto"
       >
         {category.dishes.map((dish) => (
           <SwiperSlide key={dish.id} className="h-auto">
@@ -416,19 +416,25 @@ function CuisineRow({ category, getItemQuantity, onUpdateQuantity }) {
 
 function DishCard({ dish, quantity, onUpdateQuantity }) {
   return (
-    <div className="group flex h-full min-w-0 flex-col rounded-2xl border border-[#D4AF37]/30 bg-white/5 p-4">
+    <div className="group flex h-[320px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[#D4AF37]/30 bg-white/5 p-4 sm:h-full">
       <div className="overflow-hidden rounded-xl border-2 border-transparent transition-colors group-hover:border-[#D4AF37]">
         <Image
           src={dish.image}
           alt={dish.name}
           width={320}
           height={240}
-          className="h-40 w-full object-cover sm:h-48"
+          className="h-[256px] w-full rounded-xl object-cover object-center sm:h-48"
         />
       </div>
-      <h4 className="mt-4 break-words font-semibold text-[#F5F1E8]">{dish.name}</h4>
-      <p className="mt-1 break-words text-sm text-white/50">{dish.description}</p>
-      <div className="mt-4 flex items-center justify-between gap-2 pt-2">
+      <div className="mt-1.5 flex flex-1 flex-col sm:mt-4">
+        <h4 className="min-h-[1.5rem] break-words font-semibold leading-6 text-[#F5F1E8] line-clamp-1 sm:min-h-[3rem] sm:line-clamp-2">
+          {dish.name}
+        </h4>
+        <p className="hidden mt-0 min-h-[1.25rem] break-words text-sm leading-5 text-white/50 line-clamp-1 sm:mt-1 sm:block sm:min-h-[2.5rem] sm:line-clamp-2">
+          {dish.description}
+        </p>
+      </div>
+      <div className="mt-1.5 flex items-center justify-between gap-2 pt-0 sm:mt-4 sm:pt-2">
         <span className="shrink-0 text-base font-semibold text-[#D4AF37]">
           {"\u20B9"}
           {dish.price}
