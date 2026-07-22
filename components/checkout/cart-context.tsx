@@ -11,9 +11,13 @@ import {
 
 export type CartItem = {
   id: string;
+  itemId?: string;
+  variantCode?: string;
   name: string;
   price: number;
   description?: string;
+  addOns?: string[];
+  addOnTotal?: number;
 };
 
 export type OrderType = "delivery" | "pickup";
@@ -107,7 +111,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           [item.id]: {
             ...item,
             quantity,
-            subtotal: item.price * quantity,
+            subtotal: (item.price + (item.addOnTotal ?? 0)) * quantity,
           },
         };
       });

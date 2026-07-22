@@ -1,7 +1,11 @@
 export type FullMenuItem = {
   id: string;
   name: string;
-  price: string;
+  price?: string;
+  variants?: Array<{
+    code: string;
+    price: number;
+  }>;
   description?: string;
 };
 
@@ -16,16 +20,16 @@ export const fullMenuCategories: FullMenuCategory[] = [
     id: "pizza",
     name: "Pizza",
     items: [
-      { id: "pizza-cheese", name: "Cheese Pizza", price: "M \u20B9160  |  L \u20B9300" },
-      { id: "pizza-onion", name: "Onion Pizza", price: "M \u20B9170  |  L \u20B9320" },
-      { id: "pizza-onion-capsicum", name: "Onion Capsicum Pizza", price: "M \u20B9180  |  L \u20B9340" },
-      { id: "pizza-paneer", name: "Paneer Pizza", price: "M \u20B9200  |  L \u20B9380" },
-      { id: "pizza-cheese-corn", name: "Cheese n Corn Pizza", price: "M \u20B9180  |  L \u20B9340" },
-      { id: "pizza-farmhouse", name: "Farmhouse Pizza", price: "M \u20B9250  |  L \u20B9450" },
-      { id: "pizza-veggie-paradise", name: "Veggie Paradise Pizza", price: "M \u20B9240  |  L \u20B9420" },
-      { id: "pizza-peppy-paneer", name: "Peppy Paneer Pizza", price: "M \u20B9220  |  L \u20B9400" },
-      { id: "pizza-mexican-green-wave", name: "Mexican Green Wave Pizza", price: "M \u20B9220  |  L \u20B9400" },
-      { id: "pizza-paneer-makhani", name: "Paneer Makhani Pizza", price: "M \u20B9320  |  L \u20B9480" },
+      { id: "pizza-cheese", name: "Cheese Pizza", variants: [{ code: "M", price: 160 }, { code: "L", price: 300 }] },
+      { id: "pizza-onion", name: "Onion Pizza", variants: [{ code: "M", price: 170 }, { code: "L", price: 320 }] },
+      { id: "pizza-onion-capsicum", name: "Onion Capsicum Pizza", variants: [{ code: "M", price: 180 }, { code: "L", price: 340 }] },
+      { id: "pizza-paneer", name: "Paneer Pizza", variants: [{ code: "M", price: 200 }, { code: "L", price: 380 }] },
+      { id: "pizza-cheese-corn", name: "Cheese n Corn Pizza", variants: [{ code: "M", price: 180 }, { code: "L", price: 340 }] },
+      { id: "pizza-farmhouse", name: "Farmhouse Pizza", variants: [{ code: "M", price: 250 }, { code: "L", price: 450 }] },
+      { id: "pizza-veggie-paradise", name: "Veggie Paradise Pizza", variants: [{ code: "M", price: 240 }, { code: "L", price: 420 }] },
+      { id: "pizza-peppy-paneer", name: "Peppy Paneer Pizza", variants: [{ code: "M", price: 220 }, { code: "L", price: 400 }] },
+      { id: "pizza-mexican-green-wave", name: "Mexican Green Wave Pizza", variants: [{ code: "M", price: 220 }, { code: "L", price: 400 }] },
+      { id: "pizza-paneer-makhani", name: "Paneer Makhani Pizza", variants: [{ code: "M", price: 320 }, { code: "L", price: 480 }] },
     ],
   },
   {
@@ -60,20 +64,20 @@ export const fullMenuCategories: FullMenuCategory[] = [
     id: "tandoori-chaap",
     name: "Tandoori Chaap",
     items: [
-      { id: "chaap-malai", name: "Malai chaap", price: "H \u20B9180  |  F \u20B9250" },
-      { id: "chaap-afghani", name: "Afghani chaap", price: "H \u20B9180  |  F \u20B9250" },
-      { id: "chaap-hariyali", name: "Hariyali chaap", price: "H \u20B9180  |  F \u20B9250" },
-      { id: "chaap-tandoori", name: "Tandoori chaap", price: "H \u20B9150  |  F \u20B9220" },
+      { id: "chaap-malai", name: "Malai chaap", variants: [{ code: "H", price: 180 }, { code: "F", price: 250 }] },
+      { id: "chaap-afghani", name: "Afghani chaap", variants: [{ code: "H", price: 180 }, { code: "F", price: 250 }] },
+      { id: "chaap-hariyali", name: "Hariyali chaap", variants: [{ code: "H", price: 180 }, { code: "F", price: 250 }] },
+      { id: "chaap-tandoori", name: "Tandoori chaap", variants: [{ code: "H", price: 150 }, { code: "F", price: 220 }] },
     ],
   },
   {
     id: "tandoori-tikka",
     name: "Tandoori Tikka",
     items: [
-      { id: "tikka-malai-paneer", name: "Malai paneer Tikka", price: "H \u20B9220  |  F \u20B9320" },
-      { id: "tikka-afghani-paneer", name: "Afghani Paneer Tikka", price: "H \u20B9220  |  F \u20B9320" },
-      { id: "tikka-hariyali-paneer", name: "Hariyali Paneer Tikka", price: "H \u20B9220  |  F \u20B9320" },
-      { id: "tikka-tandoori-paneer", name: "Tandoori Paneer Tikka", price: "H \u20B9200  |  F \u20B9280" },
+      { id: "tikka-malai-paneer", name: "Malai paneer Tikka", variants: [{ code: "H", price: 220 }, { code: "F", price: 320 }] },
+      { id: "tikka-afghani-paneer", name: "Afghani Paneer Tikka", variants: [{ code: "H", price: 220 }, { code: "F", price: 320 }] },
+      { id: "tikka-hariyali-paneer", name: "Hariyali Paneer Tikka", variants: [{ code: "H", price: 220 }, { code: "F", price: 320 }] },
+      { id: "tikka-tandoori-paneer", name: "Tandoori Paneer Tikka", variants: [{ code: "H", price: 200 }, { code: "F", price: 280 }] },
     ],
   },
   {

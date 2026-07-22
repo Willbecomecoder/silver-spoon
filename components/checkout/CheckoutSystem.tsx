@@ -223,15 +223,15 @@ export default function CheckoutSystem() {
 
               <div
                 ref={scrollContainerRef}
-                className="flex flex-1 min-h-0 flex-col overflow-x-hidden overflow-y-auto px-4 py-4 pb-32 sm:px-6 sm:py-5 sm:pb-36"
+                className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-4 py-4 sm:px-6 sm:py-5"
                 style={{
                   WebkitOverflowScrolling: "touch",
                   overscrollBehavior: "contain",
                   scrollBehavior: "smooth",
                   touchAction: "pan-y",
                   scrollPaddingTop: "calc(7rem + env(safe-area-inset-top, 0px))",
-                  scrollPaddingBottom: "calc(10rem + env(safe-area-inset-bottom, 0px))",
-                  paddingBottom: "calc(9rem + env(safe-area-inset-bottom, 0px))",
+                  scrollPaddingBottom: "calc(8.5rem + env(safe-area-inset-bottom, 0px))",
+                  paddingBottom: "calc(8.5rem + env(safe-area-inset-bottom, 0px))",
                 }}
               >
                 {step === "summary" ? (
@@ -313,15 +313,15 @@ function SummaryStep({
   }
 
   return (
-    <div className="flex min-h-full flex-col gap-5">
-      <div className="flex-1 min-h-0">
+    <div className="flex h-full min-h-0 max-h-[85vh] flex-col overflow-hidden">
+      <div
+        className="flex-1 overflow-y-auto pr-1"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         <OrderSummary items={items} total={total} onUpdateQuantity={onUpdateQuantity} showTotalsOnMobile={false} />
-        <div className="mt-4 sm:hidden">
-          <OrderSummaryTotals total={total} />
-        </div>
       </div>
 
-      <div className="mt-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:sticky sm:bottom-0 sm:z-10 sm:-mx-4 sm:mt-auto sm:border-t sm:border-[#D4AF37]/10 sm:bg-[#0F0F0F]/95 sm:px-4 sm:py-4 sm:backdrop-blur-md">
+      <div className="mt-auto shrink-0 -mx-4 border-t border-neutral-800 bg-[#121212] px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:pt-5 sm:pb-0">
         <button
           type="button"
           onClick={onContinue}
@@ -348,73 +348,77 @@ function DetailsStep({
   onContinue: () => void;
 }) {
   return (
-    <div className="flex min-h-full flex-col gap-5">
-      <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-6">
-        <h3 className="font-serif text-2xl font-bold text-[#D4AF37]">Customer Details</h3>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[#D4AF37]/20 bg-white/5">
+        <div className="shrink-0 border-b border-[#D4AF37]/10 px-4 py-4 sm:px-6 sm:py-5">
+          <h3 className="font-serif text-2xl font-bold text-[#D4AF37]">Customer Details</h3>
+          <p className="mt-2 text-sm text-white/50 sm:hidden">Fill in your contact and delivery information below.</p>
+        </div>
 
-        <div className="mt-5 grid gap-4">
-          <Field
-            label="Full Name *"
-            value={customer.fullName}
-            onChange={(value) => onChange({ ...customer, fullName: value })}
-            error={errors.fullName}
-            placeholder="Enter your full name"
-          />
-
-          <Field
-            label="Mobile Number *"
-            value={customer.mobileNumber}
-            onChange={(value) => onChange({ ...customer, mobileNumber: value })}
-            error={errors.mobileNumber}
-            placeholder="Enter 10-digit mobile number"
-            inputMode="numeric"
-          />
-
-          <div>
-            <p className="text-sm font-medium text-[#F5F1E8]">Delivery / Pickup</p>
-            <div className="mt-3 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-              <ChoiceButton
-                label="Delivery"
-                isActive={customer.orderType === "delivery"}
-                onClick={() => onChange({ ...customer, orderType: "delivery" })}
-              />
-              <ChoiceButton
-                label="Pickup"
-                isActive={customer.orderType === "pickup"}
-                onClick={() => onChange({ ...customer, orderType: "pickup", address: "" })}
-              />
-            </div>
-          </div>
-
-          {customer.orderType === "delivery" ? (
+        <div className="flex-1 overflow-y-auto px-4 py-4 pb-8 sm:px-6 sm:py-5" style={{ WebkitOverflowScrolling: "touch" }}>
+          <div className="grid gap-4">
             <Field
-              label="Address *"
-              value={customer.address}
-              onChange={(value) => onChange({ ...customer, address: value })}
-              error={errors.address}
-              placeholder="Enter delivery address"
+              label="Full Name *"
+              value={customer.fullName}
+              onChange={(value) => onChange({ ...customer, fullName: value })}
+              error={errors.fullName}
+              placeholder="Enter your full name"
+            />
+
+            <Field
+              label="Mobile Number *"
+              value={customer.mobileNumber}
+              onChange={(value) => onChange({ ...customer, mobileNumber: value })}
+              error={errors.mobileNumber}
+              placeholder="Enter 10-digit mobile number"
+              inputMode="numeric"
+            />
+
+            <div>
+              <p className="text-sm font-medium text-[#F5F1E8]">Delivery / Pickup</p>
+              <div className="mt-3 grid grid-cols-2 gap-3 md:flex md:flex-wrap">
+                <ChoiceButton
+                  label="Delivery"
+                  isActive={customer.orderType === "delivery"}
+                  onClick={() => onChange({ ...customer, orderType: "delivery" })}
+                />
+                <ChoiceButton
+                  label="Pickup"
+                  isActive={customer.orderType === "pickup"}
+                  onClick={() => onChange({ ...customer, orderType: "pickup", address: "" })}
+                />
+              </div>
+            </div>
+
+            {customer.orderType === "delivery" ? (
+              <Field
+                label="Address *"
+                value={customer.address}
+                onChange={(value) => onChange({ ...customer, address: value })}
+                error={errors.address}
+                placeholder="Enter delivery address"
+                isTextarea
+              />
+            ) : null}
+
+            <Field
+              label="Order Notes"
+              value={customer.notes}
+              onChange={(value) => onChange({ ...customer, notes: value })}
+              placeholder="Any extra instructions"
               isTextarea
             />
-          ) : null}
-
-          <Field
-            label="Order Notes"
-            value={customer.notes}
-            onChange={(value) => onChange({ ...customer, notes: value })}
-            placeholder="Any extra instructions"
-            isTextarea
-          />
+          </div>
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 -mx-4 mt-auto flex flex-col gap-3 border-t border-[#D4AF37]/10 bg-[#0F0F0F]/95 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] backdrop-blur-md sm:static sm:mx-0 sm:flex-row sm:flex-wrap sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
+      <div className="shrink-0 sticky bottom-0 z-10 -mx-4 mt-4 flex flex-col gap-3 border-t border-[#D4AF37]/10 bg-[#0F0F0F] px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] shadow-[0_-12px_24px_rgba(0,0,0,0.28)] sm:static sm:mx-0 sm:mt-5 sm:flex-row sm:flex-wrap sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:pb-0 sm:shadow-none">
         <SecondaryButton onClick={onBack}>Back</SecondaryButton>
         <PrimaryButton onClick={onContinue}>Continue to Payment</PrimaryButton>
       </div>
     </div>
   );
 }
-
 function PaymentStep({
   customer,
   items,
@@ -448,105 +452,109 @@ function PaymentStep({
   });
 
   return (
-    <div className="flex min-h-full flex-col gap-5">
-      <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-6">
-        <h3 className="font-serif text-2xl font-bold text-[#D4AF37]">Payment Method</h3>
+    <div className="flex h-[90vh] max-h-[700px] min-h-0 flex-col overflow-hidden">
+      <div className="flex-1 overflow-y-auto pr-1" style={{ WebkitOverflowScrolling: "touch" }}>
+        <div className="space-y-5">
+          <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-6">
+            <h3 className="font-serif text-2xl font-bold text-[#D4AF37]">Payment Method</h3>
 
-        <div className="mt-5 space-y-3">
-          <PaymentOption
-            label="QR Code Payment (UPI)"
-            checked={paymentMethod === "upi"}
-            onChange={() => onSelectPayment("upi")}
-          />
-          <PaymentOption
-            label="Cash on Delivery"
-            checked={paymentMethod === "cod"}
-            onChange={() => onSelectPayment("cod")}
-          />
-          <PaymentOption
-            label="Pay at Restaurant"
-            checked={paymentMethod === "restaurant"}
-            onChange={() => onSelectPayment("restaurant")}
-          />
-        </div>
+            <div className="mt-5 space-y-3">
+              <PaymentOption
+                label="QR Code Payment (UPI)"
+                checked={paymentMethod === "upi"}
+                onChange={() => onSelectPayment("upi")}
+              />
+              <PaymentOption
+                label="Cash on Delivery"
+                checked={paymentMethod === "cod"}
+                onChange={() => onSelectPayment("cod")}
+              />
+              <PaymentOption
+                label="Pay at Restaurant"
+                checked={paymentMethod === "restaurant"}
+                onChange={() => onSelectPayment("restaurant")}
+              />
+            </div>
 
-        <div className="mt-5 rounded-2xl border border-[#D4AF37]/15 bg-black/20 p-3 sm:p-4">
-          {paymentMethod === "upi" ? (
-            <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-5">
-              <div className="text-center">
-                <h4 className="font-serif text-[28px] font-bold leading-tight text-[#F5F1E8] sm:text-xl">Scan QR Code to Pay</h4>
-                <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-white/60 sm:text-sm">
-                  After completing the payment, share your payment screenshot on WhatsApp to verify
-                  your order.
-                </p>
-              </div>
+            <div className="mt-5 rounded-2xl border border-[#D4AF37]/15 bg-black/20 p-3 sm:p-4">
+              {paymentMethod === "upi" ? (
+                <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-5">
+                  <div className="text-center">
+                    <h4 className="font-serif text-[28px] font-bold leading-tight text-[#F5F1E8] sm:text-xl">Scan QR Code to Pay</h4>
+                    <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-white/60 sm:text-sm">
+                      After completing the payment, share your payment screenshot on WhatsApp to verify
+                      your order.
+                    </p>
+                  </div>
 
-              <div className="mt-5 flex justify-center rounded-2xl border border-[#D4AF37]/20 bg-white p-3 sm:p-4">
-                <UpiQrPreview />
-              </div>
+                  <div className="mt-5 flex justify-center rounded-2xl border border-[#D4AF37]/20 bg-white p-3 sm:p-4">
+                    <UpiQrPreview />
+                  </div>
 
-              <div className="mt-5 space-y-4">
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => onUpiConfirm(true)}
-                  className="inline-flex h-12 w-full items-center justify-center rounded-full border border-[#D4AF37]/50 bg-[#D4AF37]/10 px-4 text-sm font-medium whitespace-nowrap text-[#F5F1E8] transition-colors hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 sm:h-11 sm:px-5"
-                >
-                  {"\u{1F4AC}"} Share Payment on WhatsApp
-                </a>
-              </div>
+                  <div className="mt-5 space-y-4">
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => onUpiConfirm(true)}
+                      className="inline-flex h-12 w-full items-center justify-center rounded-full border border-[#D4AF37]/50 bg-[#D4AF37]/10 px-4 text-sm font-medium whitespace-nowrap text-[#F5F1E8] transition-colors hover:border-[#D4AF37] hover:bg-[#D4AF37]/15 sm:h-11 sm:px-5"
+                    >
+                      {"\u{1F4AC}"} Share Payment on WhatsApp
+                    </a>
+                  </div>
 
-              {errors.upiConfirmed ? (
-                <p className="mt-3 text-center text-sm text-[#D4AF37]">{errors.upiConfirmed}</p>
+                  {errors.upiConfirmed ? (
+                    <p className="mt-3 text-center text-sm text-[#D4AF37]">{errors.upiConfirmed}</p>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {paymentMethod === "cod" ? (
+                <p className="text-sm text-white/70">Payment will be collected during delivery.</p>
+              ) : null}
+
+              {paymentMethod === "restaurant" ? (
+                <p className="text-sm text-white/70">Please pay when you arrive at the restaurant.</p>
               ) : null}
             </div>
-          ) : null}
+          </div>
 
-          {paymentMethod === "cod" ? (
-            <p className="text-sm text-white/70">Payment will be collected during delivery.</p>
-          ) : null}
+          <OrderSummary
+            items={items}
+            total={total}
+            orderType={customer.orderType}
+            onUpdateQuantity={onUpdateQuantity}
+          />
 
-          {paymentMethod === "restaurant" ? (
-            <p className="text-sm text-white/70">Please pay when you arrive at the restaurant.</p>
-          ) : null}
+          <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-5">
+            <h4 className="text-base font-semibold text-[#F5F1E8]">Delivery Details</h4>
+            <div className="mt-4 grid gap-2 break-words text-sm text-white/60">
+              <p>
+                <span className="text-[#F5F1E8]">Name:</span> {customer.fullName}
+              </p>
+              <p>
+                <span className="text-[#F5F1E8]">Phone:</span> {customer.mobileNumber}
+              </p>
+              <p>
+                <span className="text-[#F5F1E8]">Order Type:</span>{" "}
+                {customer.orderType === "delivery" ? "Delivery" : "Pickup"}
+              </p>
+              {customer.orderType === "delivery" ? (
+                <p>
+                  <span className="text-[#F5F1E8]">Address:</span> {customer.address}
+                </p>
+              ) : null}
+              {customer.notes ? (
+                <p>
+                  <span className="text-[#F5F1E8]">Notes:</span> {customer.notes}
+                </p>
+              ) : null}
+            </div>
+          </div>
         </div>
       </div>
 
-      <OrderSummary
-        items={items}
-        total={total}
-        orderType={customer.orderType}
-        onUpdateQuantity={onUpdateQuantity}
-      />
-
-      <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-5">
-        <h4 className="text-base font-semibold text-[#F5F1E8]">Delivery Details</h4>
-        <div className="mt-4 grid gap-2 break-words text-sm text-white/60">
-          <p>
-            <span className="text-[#F5F1E8]">Name:</span> {customer.fullName}
-          </p>
-          <p>
-            <span className="text-[#F5F1E8]">Phone:</span> {customer.mobileNumber}
-          </p>
-          <p>
-            <span className="text-[#F5F1E8]">Order Type:</span>{" "}
-            {customer.orderType === "delivery" ? "Delivery" : "Pickup"}
-          </p>
-          {customer.orderType === "delivery" ? (
-            <p>
-              <span className="text-[#F5F1E8]">Address:</span> {customer.address}
-            </p>
-          ) : null}
-          {customer.notes ? (
-            <p>
-              <span className="text-[#F5F1E8]">Notes:</span> {customer.notes}
-            </p>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="sticky bottom-0 z-10 -mx-4 mt-auto flex flex-col gap-3 border-t border-[#D4AF37]/10 bg-[#0F0F0F]/95 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] backdrop-blur-md sm:static sm:mx-0 sm:flex-row sm:flex-wrap sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
+      <div className="sticky bottom-0 z-20 -mx-4 mt-auto flex shrink-0 flex-col gap-3 border-t border-neutral-800 bg-[#121212] px-4 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:static sm:mx-0 sm:flex-row sm:flex-wrap sm:border-0 sm:bg-transparent sm:px-0 sm:pt-5 sm:pb-0">
         <SecondaryButton onClick={onBack}>Back</SecondaryButton>
         <PrimaryButton onClick={onPlaceOrder}>Place Order</PrimaryButton>
       </div>
@@ -600,11 +608,39 @@ function OrderSummary({
   orderType?: CustomerDetails["orderType"];
   showTotalsOnMobile?: boolean;
 }) {
+  const [isMobileDetailsOpen, setIsMobileDetailsOpen] = useState(false);
+  const showMobileDetails = isMobileDetailsOpen && items.length > 0;
+
   return (
     <div className="rounded-2xl border border-[#D4AF37]/20 bg-white/5 p-4 sm:p-6">
-      <h3 className="font-serif text-2xl font-bold text-[#D4AF37]">Order Summary</h3>
+      <div className="hidden sm:block">
+        <h3 className="font-serif text-2xl font-bold text-[#D4AF37]">Order Summary</h3>
+      </div>
 
-      <div className="mt-5 divide-y divide-[#D4AF37]/10">
+      <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#D4AF37]/15 bg-black/20 px-4 py-3 sm:hidden">
+        <div className="min-w-0">
+          <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/45">Order Summary</p>
+          <p className="mt-1 text-sm font-semibold text-[#F5F1E8]">
+            Total Bill: <span className="text-[#D4AF37]">{formatCurrency(total)}</span>
+          </p>
+        </div>
+
+        {items.length > 0 ? (
+          <button
+            type="button"
+            onClick={() => setIsMobileDetailsOpen((current) => !current)}
+            aria-expanded={showMobileDetails}
+            className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[#D4AF37]/30 px-3 py-2 text-xs font-semibold text-[#F5F1E8] transition-colors hover:border-[#D4AF37]/50"
+          >
+            {showMobileDetails ? "Hide Details" : "View Details"}
+            <span className={`text-[#D4AF37] transition-transform ${showMobileDetails ? "rotate-180" : ""}`}>
+              <ChevronDownIcon />
+            </span>
+          </button>
+        ) : null}
+      </div>
+
+      <div className={`${showMobileDetails ? "mt-5 divide-y divide-[#D4AF37]/10" : "hidden"} sm:mt-5 sm:block sm:divide-y sm:divide-[#D4AF37]/10`}>
         {items.map((item) => (
           <div
             key={item.id}
@@ -612,7 +648,10 @@ function OrderSummary({
           >
             <div className="min-w-0">
               <p className="font-semibold text-[#F5F1E8]">{item.name}</p>
-              {item.description ? <p className="mt-1 text-white/50 line-clamp-2">{item.description}</p> : null}
+              {item.addOns?.length ? (
+                <p className="mt-1 text-xs text-[#D4AF37]/80">{item.addOns.join(", ")}</p>
+              ) : null}
+              {item.description ? <p className="mt-1 hidden text-white/50 line-clamp-2 sm:block">{item.description}</p> : null}
             </div>
             <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 sm:contents">
               <p className="min-w-0 text-[#D4AF37] sm:text-right">{formatCurrency(item.price)}</p>
@@ -635,7 +674,7 @@ function OrderSummary({
       </div>
 
       {showTotalsOnMobile ? (
-        <div className="mt-5 border-t border-[#D4AF37]/10 pt-4">
+        <div className={`${showMobileDetails ? "mt-5 border-t border-[#D4AF37]/10 pt-4" : "hidden"} sm:mt-5 sm:block sm:border-t sm:border-[#D4AF37]/10 sm:pt-4`}>
           <OrderSummaryTotals total={total} orderType={orderType} />
         </div>
       ) : (
@@ -646,7 +685,6 @@ function OrderSummary({
     </div>
   );
 }
-
 function OrderSummaryTotals({
   total,
   orderType,
@@ -911,6 +949,14 @@ function CloseIcon() {
   );
 }
 
+function ChevronDownIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
 function generateOrderId() {
   const date = new Date();
   const stamp = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(
@@ -974,3 +1020,4 @@ function buildWhatsAppUrl({
   const message = encodeURIComponent(lines.join("\n"));
   return `https://wa.me/${RESTAURANT_WHATSAPP_NUMBER}?text=${message}`;
 }
+

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-import { useCart } from "@/components/checkout/cart-context";
+import CustomizationModal from "@/components/CustomizationModal";
+import { useCart, type CartItem } from "@/components/checkout/cart-context";
 import { fullMenuCategories, type FullMenuCategory, type FullMenuItem } from "./full-menu-data";
 
 const allCategoryId = "all";
@@ -11,6 +12,7 @@ const allCategoryId = "all";
 export default function FullMenu() {
   const [activeCategory, setActiveCategory] = useState(allCategoryId);
   const [searchQuery, setSearchQuery] = useState("");
+  const [itemToCustomize, setItemToCustomize] = useState<CartItem | null>(null);
   const { getItemQuantity, setItemQuantity } = useCart();
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
@@ -98,6 +100,7 @@ export default function FullMenu() {
                 category={category}
                 getItemQuantity={getItemQuantity}
                 onUpdateQuantity={setItemQuantity}
+                onCustomizeItem={setItemToCustomize}
               />
             ))
           ) : (
@@ -107,6 +110,16 @@ export default function FullMenu() {
           )}
         </div>
       </motion.div>
+      {itemToCustomize ? (
+        <CustomizationModal
+          item={itemToCustomize}
+          onClose={() => setItemToCustomize(null)}
+          onConfirm={(customizedItem) => {
+            setItemQuantity(customizedItem, 1);
+            setItemToCustomize(null);
+          }}
+        />
+      ) : null}
     </section>
   );
 }
@@ -115,6 +128,7 @@ function FullMenuCategorySection({
   category,
   getItemQuantity,
   onUpdateQuantity,
+  onCustomizeItem,
 }: {
   category: FullMenuCategory;
   getItemQuantity: (itemId: string) => number;
@@ -122,6 +136,7 @@ function FullMenuCategorySection({
     item: { id: string; name: string; price: number; description?: string },
     nextQuantity: number,
   ) => void;
+  onCustomizeItem: (item: CartItem) => void;
 }) {
   return (
     <motion.div
@@ -141,8 +156,12 @@ function FullMenuCategorySection({
           <FullMenuRow
             key={item.id}
             item={item}
-            quantity={getItemQuantity(item.id)}
+            hasVariants={Boolean(item.variants?.length)}
+            portionType={category.id === "shakes" ? "shake" : null}
+            supportsAddOns={category.id === "pizza" || /\b(Burger|Pasta)\b/i.test(item.name)}
+            getItemQuantity={getItemQuantity}
             onUpdateQuantity={onUpdateQuantity}
+            onCustomizeItem={onCustomizeItem}
           />
         ))}
       </div>
@@ -152,17 +171,26 @@ function FullMenuCategorySection({
 
 function FullMenuRow({
   item,
-  quantity,
+  hasVariants,
+  portionType,
+  supportsAddOns,
+  getItemQuantity,
   onUpdateQuantity,
+  onCustomizeItem,
 }: {
   item: FullMenuItem;
-  quantity: number;
+  hasVariants: boolean;
+  portionType: "shake" | null;
+  supportsAddOns: boolean;
+  getItemQuantity: (itemId: string) => number;
   onUpdateQuantity: (
     item: { id: string; name: string; price: number; description?: string },
     nextQuantity: number,
   ) => void;
+  onCustomizeItem: (item: CartItem) => void;
 }) {
-  const checkoutItem = {
+  const quantity = getItemQuantity(item.id);
+  const checkoutItem: CartItem = {
     id: item.id,
     name: item.name,
     price: getBasePrice(item.price),
@@ -176,21 +204,146 @@ function FullMenuRow({
         {item.description ? <p className="mt-1 text-sm text-white/50">{item.description}</p> : null}
       </div>
 
-      <div className="flex items-center justify-between gap-3 sm:min-w-[260px] sm:justify-end">
-        <span className="shrink-0 text-sm font-semibold text-[#D4AF37] sm:text-base">{item.price}</span>
-        <QuantityControl
-          itemName={item.name}
-          quantity={quantity}
-          onDecrease={() => onUpdateQuantity(checkoutItem, quantity - 1)}
-          onIncrease={() => onUpdateQuantity(checkoutItem, quantity + 1)}
-          onAdd={() => onUpdateQuantity(checkoutItem, 1)}
+      {hasVariants ? (
+        <MenuVariantRows
+          item={item}
+          getItemQuantity={getItemQuantity}
+          onUpdateQuantity={onUpdateQuantity}
+          onAdd={(variantItem) => (supportsAddOns ? onCustomizeItem(variantItem) : onUpdateQuantity(variantItem, 1))}
         />
-      </div>
+      ) : portionType ? (
+        <PortionControls
+          item={item}
+          type={portionType}
+          getItemQuantity={getItemQuantity}
+          onUpdateQuantity={onUpdateQuantity}
+        />
+      ) : (
+        <div className="flex items-center justify-between gap-3 sm:min-w-[260px] sm:justify-end">
+          <span className="shrink-0 text-sm font-semibold text-[#D4AF37] sm:text-base">{item.price ?? ""}</span>
+          <QuantityControl
+            itemName={item.name}
+            quantity={quantity}
+            onDecrease={() => onUpdateQuantity(checkoutItem, quantity - 1)}
+            onIncrease={() => onUpdateQuantity(checkoutItem, quantity + 1)}
+            onAdd={() => (supportsAddOns ? onCustomizeItem(checkoutItem) : onUpdateQuantity(checkoutItem, 1))}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
-function getBasePrice(priceLabel: string) {
+function PortionControls({
+  item,
+  type,
+  getItemQuantity,
+  onUpdateQuantity,
+}: {
+  item: FullMenuItem;
+  type: "shake";
+  getItemQuantity: (itemId: string) => number;
+  onUpdateQuantity: (item: CartItem, nextQuantity: number) => void;
+}) {
+  const portions = getShakePortions(item);
+
+  return (
+    <div className="flex w-full flex-col gap-2 sm:w-[280px]">
+      {portions.map((portion) => {
+        const quantity = getItemQuantity(portion.item.id);
+
+        return (
+          <div key={portion.item.id} className="flex items-center justify-between gap-3">
+            <span className="text-sm font-semibold text-[#D4AF37]">{portion.label}</span>
+            <span className="text-sm font-semibold text-[#D4AF37]">{"\u20B9"}{portion.totalPrice}</span>
+            <QuantityControl
+              itemName={portion.item.name}
+              quantity={quantity}
+              onDecrease={() => onUpdateQuantity(portion.item, quantity - 1)}
+              onIncrease={() => onUpdateQuantity(portion.item, quantity + 1)}
+              onAdd={() => onUpdateQuantity(portion.item, 1)}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function MenuVariantRows({
+  item,
+  getItemQuantity,
+  onUpdateQuantity,
+  onAdd,
+}: {
+  item: FullMenuItem;
+  getItemQuantity: (itemId: string) => number;
+  onUpdateQuantity: (item: CartItem, nextQuantity: number) => void;
+  onAdd: (item: CartItem) => void;
+}) {
+  return (
+    <div className="flex w-full flex-col gap-2 sm:w-[280px]">
+      {item.variants?.map((variant) => {
+        const variantItem: CartItem = {
+          id: `${item.id}-${variant.code.toLowerCase()}`,
+          itemId: item.id,
+          variantCode: variant.code,
+          name: `${item.name} (${variant.code})`,
+          price: variant.price,
+          description: item.description,
+        };
+        const quantity = getItemQuantity(variantItem.id);
+
+        return (
+          <div key={variant.code} className="flex items-center justify-between gap-3">
+            <span className="text-sm font-semibold text-[#D4AF37]">{variant.code}</span>
+            <span className="text-sm font-semibold text-[#D4AF37]">{"\u20B9"}{variant.price}</span>
+            <QuantityControl
+              itemName={variantItem.name}
+              quantity={quantity}
+              onDecrease={() => onUpdateQuantity(variantItem, quantity - 1)}
+              onIncrease={() => onUpdateQuantity(variantItem, quantity + 1)}
+              onAdd={() => onAdd(variantItem)}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function getShakePortions(item: FullMenuItem) {
+  const regularPrice = getBasePrice(item.price);
+  const extraPrice = Number(item.price?.match(/Ice Cream\s*\+\s*\u20B9(\d+)/i)?.[1] ?? 0);
+
+  return [
+    {
+      label: "Regular",
+      totalPrice: regularPrice,
+      item: {
+        id: `${item.id}-regular`,
+        name: `${item.name} (Regular)`,
+        price: regularPrice,
+        description: item.description,
+      },
+    },
+    {
+      label: "With Ice Cream (+\u20B930)",
+      totalPrice: regularPrice + extraPrice,
+      item: {
+        id: `${item.id}-with-ice-cream`,
+        name: `${item.name} (With Ice Cream)`,
+        price: regularPrice,
+        description: item.description,
+        addOns: [`Ice Cream (+\u20B9${extraPrice})`],
+        addOnTotal: extraPrice,
+      },
+    },
+  ];
+}
+
+function getBasePrice(priceLabel?: string) {
+  if (!priceLabel) return 0;
   const match = priceLabel.match(/\d+/);
   return match ? Number(match[0]) : 0;
 }
@@ -201,12 +354,14 @@ function QuantityControl({
   onDecrease,
   onIncrease,
   onAdd,
+  addLabel = "+ Add",
 }: {
   itemName: string;
   quantity: number;
   onDecrease: () => void;
   onIncrease: () => void;
   onAdd: () => void;
+  addLabel?: string;
 }) {
   if (quantity > 0) {
     return (
@@ -239,7 +394,7 @@ function QuantityControl({
       aria-label={`Add ${itemName} to cart`}
       className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-[#D4AF37]/50 bg-[#D4AF37]/10 px-4 text-sm font-medium text-[#F5F1E8] transition-colors hover:border-[#D4AF37] hover:bg-[#D4AF37]/15"
     >
-      + Add
+      {addLabel}
     </button>
   );
 }
